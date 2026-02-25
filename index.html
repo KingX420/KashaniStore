@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kashani Store — Trending Products & Reviews</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07090e;--surface:#0c0f16;--surface2:#111520;--surface3:#171d2a;
+  --accent:#e8a100;--accent2:#ff4444;--accent3:#00c8f0;
+  --text:#eceef5;--text-sub:#9aa0b0;--text-muted:#5a6070;
+  --border:rgba(232,161,0,.12);--border2:rgba(255,255,255,.06);
+  --font-d:'Bebas Neue',sans-serif;--font-h:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);overflow-x:hidden;cursor:none}
+body::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9990}
+
+/* CURSOR */
+#cur,#cur2{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+#cur{width:10px;height:10px;background:var(--accent);transition:width .3s,height .3s;mix-blend-mode:difference}
+#cur2{width:38px;height:38px;border:1.5px solid rgba(232,161,0,.45);transition:width .3s,height .3s}
+body.hov #cur{width:22px;height:22px}
+body.hov #cur2{width:58px;height:58px;border-color:var(--accent)}
+
+/* PAGE SYSTEM */
+.pg{display:none;min-height:100vh}
+.pg.on{display:block;animation:pgIn .55s cubic-bezier(.16,1,.3,1) both}
+@keyframes pgIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+
+/* ANNOUNCEMENT */
+.ann{height:38px;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--accent3),var(--accent2));background-size:300% 100%;animation:annBg 5s linear infinite;font-family:var(--font-h);font-size:.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#07090e}
+@keyframes annBg{0%{background-position:0%}100%{background-position:300%}}
+
+/* NAV */
+nav{position:fixed;top:38px;left:0;right:0;z-index:1000;height:68px;padding:0 5vw;display:flex;align-items:center;justify-content:space-between;transition:background .4s,backdrop-filter .4s,box-shadow .4s}
+nav.stuck{background:rgba(7,9,14,.93);backdrop-filter:blur(24px);box-shadow:0 1px 0 var(--border)}
+.nlogo{font-family:var(--font-d);font-size:1.9rem;letter-spacing:3px;cursor:pointer;color:var(--text)}
+.nlogo b{color:var(--accent)}
+.nlinks{display:flex;align-items:center;gap:2.2rem}
+.nlinks a{font-family:var(--font-h);font-size:.78rem;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-sub);text-decoration:none;position:relative;padding-bottom:3px;transition:color .3s}
+.nlinks a::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.nlinks a:hover{color:var(--text)}
+.nlinks a:hover::after{transform:scaleX(1)}
+.nbtn{font-family:var(--font-h);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:10px 22px;border-radius:50px;background:var(--accent);color:#07090e;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .3s;box-shadow:0 0 20px rgba(232,161,0,.25)}
+.nbtn:hover{box-shadow:0 0 35px rgba(232,161,0,.5);transform:translateY(-2px)}
+.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
+.ham span{width:24px;height:2px;background:var(--text);display:block;transition:.3s}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:106px 5vw 4rem;position:relative;overflow:hidden;text-align:center}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 115%,rgba(232,161,0,.09) 0%,transparent 65%),radial-gradient(ellipse 55% 45% at 85% 10%,rgba(0,200,240,.06) 0%,transparent 60%),radial-gradient(ellipse 45% 35% at 5% 30%,rgba(255,68,68,.04) 0%,transparent 55%)}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(232,161,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(232,161,0,.025) 1px,transparent 1px);background-size:64px 64px;animation:gridM 18s linear infinite}
+@keyframes gridM{from{transform:translateY(0)}to{transform:translateY(64px)}}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.o1{width:550px;height:550px;background:rgba(232,161,0,.055);top:-120px;right:-120px;animation:oF 9s ease-in-out infinite}
+.o2{width:400px;height:400px;background:rgba(0,200,240,.045);bottom:-80px;left:-80px;animation:oF 9s ease-in-out infinite reverse;animation-delay:-4s}
+.o3{width:280px;height:280px;background:rgba(255,68,68,.035);top:45%;left:55%;animation:oF 12s ease-in-out infinite;animation-delay:-7s}
+@keyframes oF{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-18px) scale(1.04)}66%{transform:translate(-18px,25px) scale(.96)}}
+.hero-content{position:relative;z-index:1;max-width:1000px}
+.htag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-h);font-size:.68rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,161,0,.28);padding:7px 18px;border-radius:50px;margin-bottom:2.2rem;background:rgba(232,161,0,.06);animation:fUp .8s .15s both}
+.htag::before,.htag::after{content:'◆';font-size:.5rem;opacity:.6}
+.htitle{font-family:var(--font-d);font-size:clamp(5.5rem,14.5vw,14rem);line-height:.88;letter-spacing:-1px;color:var(--text);animation:fUp .8s .3s both}
+.htitle .stroke{color:transparent;-webkit-text-stroke:2px var(--accent);position:relative;display:inline-block}
+.htitle .stroke .fill{position:absolute;inset:0;color:var(--accent);-webkit-text-stroke:0;clip-path:polygon(0 0,0 0,0 100%,0 100%);animation:clipR 1.4s 1.6s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes clipR{to{clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}}
+.hsub{font-size:clamp(.95rem,1.8vw,1.18rem);font-weight:300;color:var(--text-sub);margin:1.8rem auto 2.8rem;max-width:580px;line-height:1.75;animation:fUp .8s .45s both}
+.hcta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fUp .8s .6s both}
+.btn{font-family:var(--font-h);font-weight:700;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;padding:14px 30px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:none;position:relative;overflow:hidden;transition:all .3s}
+.btn-p{background:var(--accent);color:#07090e;box-shadow:0 0 28px rgba(232,161,0,.28)}
+.btn-p:hover{box-shadow:0 0 50px rgba(232,161,0,.55);transform:translateY(-2px)}
+.btn-s{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.18)}
+.btn-s:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);transform:translateX(-110%) skewX(-15deg);transition:transform .5s}
+.btn:hover::before{transform:translateX(110%) skewX(-15deg)}
+.hstats{display:flex;gap:3.5rem;justify-content:center;margin-top:5rem;animation:fUp .8s .75s both}
+.hstat-n{font-family:var(--font-d);font-size:2.8rem;color:var(--accent);line-height:1}
+.hstat-l{font-size:.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-top:.2rem}
+.scroll-i{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;animation:fUp .8s .9s both}
+.scroll-i span{font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);font-family:var(--font-h);font-weight:600}
+.scroll-ln{width:1px;height:48px;background:linear-gradient(to bottom,var(--accent),transparent);animation:sP 2.2s ease-in-out infinite}
+@keyframes sP{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes fUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+
+/* TICKER */
+.ticker-w{overflow:hidden;background:var(--accent);padding:13px 0}
+.ticker-t{display:flex;width:max-content;animation:tick 28s linear infinite}
+.ticker-i{padding:0 28px;font-family:var(--font-d);font-size:1rem;letter-spacing:2px;color:#07090e;display:flex;align-items:center;gap:18px}
+.ticker-i::after{content:'◆';font-size:.55rem;opacity:.4}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+.sec{padding:8rem 5vw;position:relative}
+.sec-lbl{font-family:var(--font-h);font-size:.68rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:12px;margin-bottom:.8rem}
+.sec-lbl::before{content:'';width:28px;height:1px;background:var(--accent)}
+.sec-title{font-family:var(--font-h);font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.08;margin-bottom:1rem}
+.sec-title em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px var(--accent)}
+.gln{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 8px rgba(232,161,0,.4)}
+
+/* FEATURED BANNER */
+.feat-banner{margin:5rem 5vw 0;border-radius:16px;overflow:hidden;min-height:420px;display:flex;align-items:flex-end;position:relative}
+.feat-banner-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s}
+.feat-banner:hover .feat-banner-img{transform:scale(1.04)}
+.feat-banner-over{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,9,14,.9) 0%,rgba(7,9,14,.55) 50%,transparent 100%)}
+.feat-banner-body{position:relative;z-index:1;padding:3rem}
+.feat-banner-tag{font-family:var(--font-h);font-size:.68rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem}
+.feat-banner-title{font-family:var(--font-d);font-size:clamp(2.5rem,6vw,5rem);line-height:.92;letter-spacing:-1px;color:var(--text);margin-bottom:1rem}
+.feat-banner-desc{font-size:.95rem;color:var(--text-sub);max-width:400px;line-height:1.65;margin-bottom:2rem}
+
+/* CATEGORY CARDS */
+.cats-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:2px;background:var(--border2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;margin-top:3rem}
+.cat-c{background:var(--surface);position:relative;cursor:pointer;overflow:hidden;text-decoration:none;display:block;transition:background .4s}
+.cat-c:hover{background:var(--surface2)}
+.cat-img{width:100%;height:210px;object-fit:cover;display:block;transition:transform .65s cubic-bezier(.16,1,.3,1),filter .4s}
+.cat-c:hover .cat-img{transform:scale(1.07);filter:brightness(1.12) saturate(1.1)}
+.cat-over{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,9,14,.93) 0%,rgba(7,9,14,.28) 55%,transparent 100%);transition:opacity .4s}
+.cat-body{position:absolute;bottom:0;left:0;right:0;padding:1.4rem 1.5rem}
+.cat-ico{font-size:1.6rem;margin-bottom:.4rem;display:block}
+.cat-name{font-family:var(--font-h);font-size:1.12rem;font-weight:800;color:var(--text);margin-bottom:.25rem;transition:color .3s}
+.cat-c:hover .cat-name{color:var(--accent)}
+.cat-meta{font-size:.75rem;color:var(--text-muted)}
+.cat-arr{position:absolute;top:12px;right:12px;width:34px;height:34px;border:1px solid rgba(232,161,0,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--accent);opacity:0;transform:translateY(5px);transition:all .35s}
+.cat-c:hover .cat-arr{opacity:1;transform:none}
+.cat-bar{position:absolute;bottom:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--accent),var(--accent3));transform:scaleX(0);transform-origin:left;transition:transform .5s}
+.cat-c:hover .cat-bar{transform:scaleX(1)}
+
+/* PRODUCT CARDS */
+.prod-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:1.6rem;margin-top:3rem}
+.prod-c{background:var(--surface);border:1px solid var(--border2);border-radius:12px;overflow:hidden;position:relative;transition:transform .45s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .45s}
+.prod-c:hover{transform:translateY(-10px);border-color:rgba(232,161,0,.38);box-shadow:0 28px 75px rgba(0,0,0,.55),0 0 0 1px rgba(232,161,0,.08)}
+.prod-img-w{position:relative;overflow:hidden;height:235px;background:var(--surface2)}
+.prod-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s cubic-bezier(.16,1,.3,1),filter .4s}
+.prod-c:hover .prod-img{transform:scale(1.07);filter:brightness(1.08) saturate(1.05)}
+.prod-sheen{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,transparent 50%,rgba(0,0,0,.25) 100%);opacity:0;transition:opacity .4s;pointer-events:none}
+.prod-c:hover .prod-sheen{opacity:1}
+.prod-imgover{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(7,9,14,.7))}
+.prod-badge{position:absolute;top:12px;left:12px;z-index:2;font-family:var(--font-h);font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border-radius:50px}
+.b-hot{background:var(--accent2);color:#fff}
+.b-new{background:var(--accent3);color:#07090e}
+.b-trend{background:var(--accent);color:#07090e}
+.prod-info{padding:1.4rem}
+.prod-cat{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.45rem}
+.prod-name{font-family:var(--font-h);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.4rem;line-height:1.3}
+.prod-desc{font-size:.82rem;color:var(--text-muted);line-height:1.55;margin-bottom:.9rem}
+.stars{color:var(--accent);font-size:.78rem;letter-spacing:1px;margin-bottom:.9rem}
+.prod-pr-row{display:flex;align-items:baseline;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap}
+.prod-price{font-family:var(--font-d);font-size:2rem;color:var(--accent);line-height:1}
+.prod-old{font-size:.82rem;color:var(--text-muted);text-decoration:line-through}
+.prod-save{font-size:.68rem;font-weight:700;color:#07090e;background:var(--accent);padding:3px 9px;border-radius:50px;font-family:var(--font-h);letter-spacing:1px}
+.abtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:6px;background:var(--accent);color:#07090e;font-family:var(--font-h);font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.abtn::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.15);transform:translateX(-110%) skewX(-15deg);transition:.5s}
+.abtn:hover::before{transform:translateX(110%) skewX(-15deg)}
+.abtn:hover{box-shadow:0 0 30px rgba(232,161,0,.45);transform:scale(1.02)}
+
+/* YOUTUBE */
+.yt-sec{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:8rem 5vw}
+.yt-wrap{max-width:960px;margin:0 auto}
+.yt-card{background:var(--surface2);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden;margin-top:3.5rem;position:relative}
+.yt-banner-img{width:100%;height:230px;object-fit:cover;display:block;filter:brightness(.65)}
+.yt-banner-over{position:absolute;top:0;left:0;right:0;height:230px;background:linear-gradient(to bottom,transparent 30%,var(--surface2))}
+.yt-card-body{padding:0 2.5rem 2.5rem;position:relative;text-align:center}
+.yt-logo-ring{width:112px;height:112px;border-radius:50%;background:var(--surface);border:3px solid rgba(255,30,30,.4);margin:-56px auto 1.5rem;overflow:hidden;box-shadow:0 0 40px rgba(255,30,30,.22);display:flex;align-items:center;justify-content:center;position:relative;transition:box-shadow .4s}
+.yt-logo-ring:hover{box-shadow:0 0 60px rgba(255,30,30,.5)}
+.yt-logo-ring img,.yt-logo-ring video{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.yt-logo-fb{font-size:3.2rem;animation:ytP 3s ease-in-out infinite}
+@keyframes ytP{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.yt-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,0,0,.12);border:1px solid rgba(255,0,0,.25);color:#ff4444;font-family:var(--font-h);font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:50px;margin-bottom:.8rem}
+.yt-cname{font-family:var(--font-d);font-size:2.8rem;letter-spacing:2px;color:var(--text);margin-bottom:.4rem}
+.yt-cname span{color:#ff4444}
+.yt-handle{font-size:.88rem;color:var(--text-muted);margin-bottom:1.5rem}
+.yt-stats-r{display:flex;justify-content:center;gap:4rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.yt-sn{font-family:var(--font-d);font-size:2rem;color:var(--text)}
+.yt-sl{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-top:.1rem}
+.yt-dv{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:1.4rem 0}
+.yt-desc{font-size:.9rem;color:var(--text-sub);max-width:520px;margin:0 auto 2rem;line-height:1.75}
+.btn-yt{display:inline-flex;align-items:center;gap:10px;background:#ff0000;color:#fff;font-family:var(--font-h);font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border-radius:50px;text-decoration:none;border:none;cursor:pointer;transition:all .3s;box-shadow:0 0 28px rgba(255,0,0,.3);position:relative;overflow:hidden}
+.btn-yt::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.18);transform:translateX(-110%) skewX(-15deg);transition:.5s}
+.btn-yt:hover::before{transform:translateX(110%) skewX(-15deg)}
+.btn-yt:hover{box-shadow:0 0 50px rgba(255,0,0,.55);transform:translateY(-2px)}
+
+/* CONTACT */
+.contact-g{display:grid;grid-template-columns:1fr 1.2fr;gap:4rem;align-items:start;margin-top:3rem}
+.ci{display:flex;align-items:flex-start;gap:1rem;padding:1.4rem;background:var(--surface);border:1px solid var(--border2);border-radius:10px;transition:all .3s;margin-bottom:.9rem}
+.ci:hover{border-color:rgba(232,161,0,.35);transform:translateX(6px);box-shadow:-3px 0 0 var(--accent)}
+.ci-ico{font-size:1.3rem;flex-shrink:0;margin-top:.15rem}
+.ci-lbl{font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.28rem}
+.ci-val{font-size:.9rem;color:var(--text)}
+.ci-val a{color:var(--text);text-decoration:none;transition:color .3s}
+.ci-val a:hover{color:var(--accent)}
+.cf{display:flex;flex-direction:column;gap:1rem}
+.cf-g{display:flex;flex-direction:column;gap:5px}
+.cf-l{font-size:.7rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted)}
+.cf-i,.cf-ta{background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:13px 16px;color:var(--text);font-family:var(--font-b);font-size:.9rem;outline:none;transition:border-color .3s,box-shadow .3s;resize:none}
+.cf-i:focus,.cf-ta:focus{border-color:var(--accent);box-shadow:0 0 18px rgba(232,161,0,.1)}
+.cf-ta{min-height:120px}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:4.5rem 5vw 2rem}
+.foot-g{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.foot-logo{font-family:var(--font-d);font-size:2.5rem;letter-spacing:3px;color:var(--text);margin-bottom:.9rem;display:block}
+.foot-logo b{color:var(--accent)}
+.foot-p{font-size:.88rem;color:var(--text-muted);line-height:1.75}
+.foot-h{font-family:var(--font-h);font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:1.4rem}
+.foot-ul{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+.foot-ul a{font-size:.88rem;color:var(--text-muted);text-decoration:none;transition:all .3s;display:flex;align-items:center;gap:5px}
+.foot-ul a::before{content:'→';font-size:.75rem;color:var(--accent);opacity:0;transform:translateX(-7px);transition:.3s}
+.foot-ul a:hover{color:var(--text);padding-left:3px}
+.foot-ul a:hover::before{opacity:1;transform:none}
+.foot-bot{border-top:1px solid var(--border);padding-top:1.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.foot-bot p{font-size:.82rem;color:var(--text-muted)}
+.socials{display:flex;gap:.8rem}
+.soc{width:38px;height:38px;border:1px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:.9rem;text-decoration:none;transition:all .3s}
+.soc:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-4px);box-shadow:0 0 18px rgba(232,161,0,.2)}
+
+/* CATEGORY PAGE */
+.cp-hero{padding:140px 5vw 4rem;position:relative;overflow:hidden}
+.cp-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(232,161,0,.055) 0%,transparent 65%)}
+.breadc{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-muted);margin-bottom:1.8rem;position:relative;z-index:1}
+.breadc a{color:var(--accent);text-decoration:none;cursor:pointer;transition:opacity .3s}
+.breadc a:hover{opacity:.7}
+.cp-ico{font-size:3.5rem;margin-bottom:.9rem;display:block;animation:bnc .6s cubic-bezier(.16,1,.3,1);position:relative;z-index:1}
+@keyframes bnc{from{transform:scale(0) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+.cp-title{font-family:var(--font-d);font-size:clamp(3rem,9vw,8rem);line-height:.88;letter-spacing:-1px;color:var(--text);position:relative;z-index:1}
+.cp-title .ak{color:transparent;-webkit-text-stroke:2px var(--accent)}
+.cp-desc{font-size:1.05rem;color:var(--text-sub);max-width:580px;margin-top:1rem;line-height:1.7;position:relative;z-index:1}
+.filter-b{padding:1.4rem 5vw;border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.fl{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);font-family:var(--font-h)}
+.fbtn{font-family:var(--font-h);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:50px;background:var(--surface);border:1px solid var(--border2);color:var(--text-muted);cursor:pointer;transition:all .3s}
+.fbtn.act,.fbtn:hover{background:rgba(232,161,0,.1);border-color:var(--accent);color:var(--accent)}
+.prod-sec{padding:4rem 5vw 6rem}
+
+/* PARTICLES */
+#ptc{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.pt{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;opacity:0;animation:ptF linear infinite}
+@keyframes ptF{0%{opacity:0;transform:translateY(0)}10%{opacity:.5}90%{opacity:.15}100%{opacity:0;transform:translateY(-100vh)}}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(36px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
+
+/* MOBILE MENU */
+.mmenu{position:fixed;inset:0;z-index:999;background:rgba(7,9,14,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.mmenu.open{transform:none}
+.mmenu a{font-family:var(--font-d);font-size:2.5rem;letter-spacing:3px;color:var(--text);text-decoration:none;transition:color .3s}
+.mmenu a:hover{color:var(--accent)}
+.mclose{position:absolute;top:1.5rem;right:5vw;background:none;border:none;color:var(--text);font-size:1.6rem;cursor:pointer}
+
+/* LOADING BAR */
+#lbar{position:fixed;top:0;left:0;right:0;height:3px;z-index:10001;overflow:hidden}
+#lbar::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,var(--accent),var(--accent3),transparent);animation:lbA .9s .1s ease-out both}
+@keyframes lbA{from{left:-100%}to{left:150%}}
+
+/* RESPONSIVE */
+@media(max-width:960px){.contact-g{grid-template-columns:1fr}.foot-g{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.nlinks{display:none}.ham{display:flex}.hstats{gap:2rem;flex-wrap:wrap}.foot-g{grid-template-columns:1fr}body{cursor:auto}#cur,#cur2{display:none}}
+
+/* SHIMMER for images loading */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.prod-img-w::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:400px 100%;animation:shimmer 1.4s ease-in-out infinite;z-index:0}
+.prod-img-w .prod-img{position:relative;z-index:1}
+</style>
+</head>
+<body>
+
+<div id="lbar"></div>
+<div id="cur"></div>
+<div id="cur2"></div>
+<div id="ptc"></div>
+
+<!-- ANNOUNCEMENT -->
+<div class="ann">🔥 Daily Deals · Verified Amazon Links · New Products Added Weekly · Subscribe on YouTube 🔥</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nlogo" onclick="goHome()">KASH<b>ANI</b></div>
+  <div class="nlinks">
+    <a href="#" onclick="goHome();return false">Home</a>
+    <a href="#" onclick="goHome();setTimeout(()=>scrollSec('#cats'),380);return false">Categories</a>
+    <a href="#yt">YouTube</a>
+    <a href="#contact">Contact</a>
+    <a href="https://www.amazon.com" target="_blank" class="nbtn">🛒 Amazon Shop</a>
+  </div>
+  <button class="ham" onclick="toggleMM()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mmenu" id="mm">
+  <button class="mclose" onclick="toggleMM()">✕</button>
+  <a href="#" onclick="goHome();toggleMM();return false">Home</a>
+  <a href="#" onclick="goHome();setTimeout(()=>scrollSec('#cats'),380);toggleMM();return false">Categories</a>
+  <a href="#yt" onclick="toggleMM()">YouTube</a>
+  <a href="#contact" onclick="toggleMM()">Contact</a>
+  <a href="https://www.amazon.com" target="_blank" onclick="toggleMM()">Amazon Shop</a>
+</div>
+
+<!-- ═══════════ HOME PAGE ═══════════ -->
+<div class="pg on" id="pg-home">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hgrid"></div>
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="htag">Trending Products &amp; Reviews</div>
+    <h1 class="htitle">
+      KASH<span class="stroke"><span class="fill">ANI</span>ANI</span><br>STORE
+    </h1>
+    <p class="hsub">Discover the hottest trending products across Tech, Gaming, Home, Beauty &amp; more — curated by Kashani for smart shoppers who want the best deals.</p>
+    <div class="hcta">
+      <a href="#" onclick="scrollSec('#cats');return false" class="btn btn-p">Explore Categories →</a>
+      <a href="https://youtube.com/@KashaniStore" target="_blank" class="btn btn-s">▶ Watch on YouTube</a>
+    </div>
+    <div class="hstats">
+      <div><div class="hstat-n" id="sn1">0</div><div class="hstat-l">Products</div></div>
+      <div><div class="hstat-n" id="sn2">0</div><div class="hstat-l">Categories</div></div>
+      <div><div class="hstat-n" id="sn3">0</div><div class="hstat-l">Verified Links</div></div>
+    </div>
+  </div>
+  <div class="scroll-i"><div class="scroll-ln"></div><span>Scroll</span></div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-w">
+  <div class="ticker-t">
+    <span class="ticker-i">Tech Gadgets</span><span class="ticker-i">Smart Home</span><span class="ticker-i">Beauty & Skincare</span><span class="ticker-i">Fitness & Health</span><span class="ticker-i">Gaming Gear</span><span class="ticker-i">Kitchen Essentials</span><span class="ticker-i">Fashion & Style</span><span class="ticker-i">Travel & Adventure</span>
+    <span class="ticker-i">Tech Gadgets</span><span class="ticker-i">Smart Home</span><span class="ticker-i">Beauty & Skincare</span><span class="ticker-i">Fitness & Health</span><span class="ticker-i">Gaming Gear</span><span class="ticker-i">Kitchen Essentials</span><span class="ticker-i">Fashion & Style</span><span class="ticker-i">Travel & Adventure</span>
+  </div>
+</div>
+
+<!-- FEATURED BANNER -->
+<div class="rv" style="margin-top:0">
+  <div class="feat-banner">
+    <img class="feat-banner-img" src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400&q=80" alt="Featured Tech" loading="lazy">
+    <div class="feat-banner-over"></div>
+    <div class="feat-banner-body">
+      <div class="feat-banner-tag">✦ Editor's Pick · Updated Daily</div>
+      <div class="feat-banner-title">SHOP<br>SMARTER</div>
+      <p class="feat-banner-desc">Every product reviewed personally. Every link verified. Hundreds of deals across 8 categories — all updated daily.</p>
+      <a href="#" onclick="scrollSec('#cats');return false" class="btn btn-p">Browse All Categories →</a>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="sec" id="cats">
+  <div class="rv">
+    <div class="sec-lbl">Browse by Category</div>
+    <h2 class="sec-title">Trending <em>Categories</em></h2>
+    <p style="color:var(--text-sub);font-size:.95rem;max-width:560px;line-height:1.75">Each category is a curated playlist of the most viral trending products. Click any to explore the full collection with Amazon links.</p>
+  </div>
+
+  <div class="cats-g rv d2">
+    <a class="cat-c" onclick="showCat('tech');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80" alt="Tech & Gadgets" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">💻</span><div class="cat-name">Tech & Gadgets</div><div class="cat-meta">6 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+    <a class="cat-c" onclick="showCat('gaming');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=80" alt="Gaming" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">🎮</span><div class="cat-name">Gaming</div><div class="cat-meta">5 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+    <a class="cat-c" onclick="showCat('home');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Smart Home" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">🏠</span><div class="cat-name">Smart Home</div><div class="cat-meta">4 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+    <a class="cat-c" onclick="showCat('beauty');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80" alt="Beauty" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">✨</span><div class="cat-name">Beauty & Skincare</div><div class="cat-meta">4 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+    <a class="cat-c" onclick="showCat('fitness');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80" alt="Fitness" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">💪</span><div class="cat-name">Fitness & Health</div><div class="cat-meta">4 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+    <a class="cat-c" onclick="showCat('kitchen');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80" alt="Kitchen" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">🍳</span><div class="cat-name">Kitchen Essentials</div><div class="cat-meta">4 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+    <a class="cat-c" onclick="showCat('fashion');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=600&q=80" alt="Fashion" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">👗</span><div class="cat-name">Fashion & Style</div><div class="cat-meta">4 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+    <a class="cat-c" onclick="showCat('travel');return false" href="#">
+      <img class="cat-img" src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80" alt="Travel" loading="lazy">
+      <div class="cat-over"></div>
+      <div class="cat-body"><span class="cat-ico">✈️</span><div class="cat-name">Travel & Adventure</div><div class="cat-meta">4 Products · Updated today</div></div>
+      <div class="cat-arr">→</div><div class="cat-bar"></div>
+    </a>
+  </div>
+</section>
+
+<div class="gln"></div>
+
+<!-- HOT RIGHT NOW -->
+<section class="sec">
+  <div class="rv">
+    <div class="sec-lbl">Hand-Picked Deals</div>
+    <h2 class="sec-title">Hot Right <em>Now</em></h2>
+    <p style="color:var(--text-sub);font-size:.95rem;max-width:520px;line-height:1.75;margin-bottom:0">These products are going viral this week. All Amazon links verified and updated.</p>
+  </div>
+  <div class="prod-g">
+    <div class="prod-c rv d1">
+      <div class="prod-img-w">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80" alt="Headphones" loading="lazy">
+        <div class="prod-sheen"></div><div class="prod-imgover"></div>
+        <span class="prod-badge b-hot">🔥 HOT</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-cat">Tech · Audio</div>
+        <div class="prod-name">Wireless Noise-Cancelling Headphones</div>
+        <div class="prod-desc">Industry-leading ANC, 30hr battery, premium sound quality for audiophiles.</div>
+        <div class="stars">★★★★★ <span style="color:var(--text-muted);font-size:.75rem">(2.4k reviews)</span></div>
+        <div class="prod-pr-row"><span class="prod-price">$79</span><span class="prod-old">$149</span><span class="prod-save">SAVE 47%</span></div>
+        <a href="https://www.amazon.com" target="_blank" class="abtn">View on Amazon →</a>
+      </div>
+    </div>
+    <div class="prod-c rv d2">
+      <div class="prod-img-w">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80" alt="Smart Watch" loading="lazy">
+        <div class="prod-sheen"></div><div class="prod-imgover"></div>
+        <span class="prod-badge b-new">✨ NEW</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-cat">Tech · Wearables</div>
+        <div class="prod-name">Smart Fitness Watch Pro</div>
+        <div class="prod-desc">GPS, heart rate, sleep tracking, 100+ workout modes, 7-day battery life.</div>
+        <div class="stars">★★★★☆ <span style="color:var(--text-muted);font-size:.75rem">(1.8k reviews)</span></div>
+        <div class="prod-pr-row"><span class="prod-price">$129</span><span class="prod-old">$199</span><span class="prod-save">SAVE 35%</span></div>
+        <a href="https://www.amazon.com" target="_blank" class="abtn">View on Amazon →</a>
+      </div>
+    </div>
+    <div class="prod-c rv d3">
+      <div class="prod-img-w">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1585515320310-259814833e62?w=600&q=80" alt="Air Fryer" loading="lazy">
+        <div class="prod-sheen"></div><div class="prod-imgover"></div>
+        <span class="prod-badge b-trend">📈 TRENDING</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-cat">Kitchen</div>
+        <div class="prod-name">6Qt Digital Air Fryer XL</div>
+        <div class="prod-desc">80% less fat, 8 preset modes, digital display, dishwasher-safe basket.</div>
+        <div class="stars">★★★★★ <span style="color:var(--text-muted);font-size:.75rem">(3.1k reviews)</span></div>
+        <div class="prod-pr-row"><span class="prod-price">$59</span><span class="prod-old">$99</span><span class="prod-save">SAVE 40%</span></div>
+        <a href="https://www.amazon.com" target="_blank" class="abtn">View on Amazon →</a>
+      </div>
+    </div>
+    <div class="prod-c rv d4">
+      <div class="prod-img-w">
+        <img class="prod-img" src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80" alt="Skincare" loading="lazy">
+        <div class="prod-sheen"></div><div class="prod-imgover"></div>
+        <span class="prod-badge b-hot">🔥 HOT</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-cat">Beauty · Skincare</div>
+        <div class="prod-name">Gua Sha Face Sculpting Set</div>
+        <div class="prod-desc">Viral beauty tool. Reduce puffiness, define jawline, glowing skin in 5 minutes.</div>
+        <div class="stars">★★★★★ <span style="color:var(--text-muted);font-size:.75rem">(4.2k reviews)</span></div>
+        <div class="prod-pr-row"><span class="prod-price">$24</span><span class="prod-old">$45</span><span class="prod-save">SAVE 47%</span></div>
+        <a href="https://www.amazon.com" target="_blank" class="abtn">View on Amazon →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gln"></div>
+
+<!-- YOUTUBE SECTION -->
+<section class="yt-sec" id="yt">
+  <div class="yt-wrap">
+    <div class="rv" style="text-align:center">
+      <div class="sec-lbl" style="justify-content:center">Our Channel</div>
+      <h2 class="sec-title" style="text-align:center">Watch <em>Kashani</em><br>on YouTube</h2>
+      <p style="color:var(--text-sub);text-align:center;max-width:480px;margin:0 auto;line-height:1.75">Product reviews, unboxings, tutorials and honest comparisons — subscribe to stay ahead on what's worth buying.</p>
+    </div>
+    <div class="yt-card rv d2">
+      <!-- CHANNEL BANNER — replace with your real banner image -->
+      <img class="yt-banner-img" src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&q=80" alt="YouTube Banner" loading="lazy">
+      <div class="yt-banner-over"></div>
+      <div class="yt-card-body">
+
+        <!--
+          YOUTUBE LOGO:
+          Replace the span below with your logo image:
+          <img src="YOUR_LOGO.jpg" alt="Kashani Logo">
+        -->
+        <div class="yt-logo-ring">
+          <span class="yt-logo-fb">📺</span>
+        </div>
+
+        <div class="yt-badge">● YouTube Channel</div>
+        <div class="yt-cname">KASHANI <span>STORE</span></div>
+        <div class="yt-handle">@KashaniStore · Product Reviews & Deals</div>
+        <div class="yt-dv"></div>
+        <div class="yt-stats-r">
+          <div><div class="yt-sn">—</div><div class="yt-sl">Subscribers</div></div>
+          <div><div class="yt-sn">—</div><div class="yt-sl">Videos</div></div>
+          <div><div class="yt-sn">—</div><div class="yt-sl">Total Views</div></div>
+        </div>
+        <div class="yt-dv"></div>
+        <p class="yt-desc">We review, unbox and compare the most trending products on the internet — so you can shop smarter and skip the guesswork. New videos every week covering tech, beauty, home, fitness & more!</p>
+        <!-- REPLACE href with your real YouTube channel URL -->
+        <a href="https://youtube.com/@KashaniStore" target="_blank" class="btn-yt">▶ Visit Channel</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact">
+  <div class="rv">
+    <div class="sec-lbl">Get In Touch</div>
+    <h2 class="sec-title">Contact <em>Us</em></h2>
+  </div>
+  <div class="contact-g">
+    <div class="rv d1">
+      <div class="ci"><span class="ci-ico">📧</span><div><div class="ci-lbl">Email</div><div class="ci-val"><a href="mailto:contact@kashanistore.com">contact@kashanistore.com</a></div></div></div>
+      <div class="ci"><span class="ci-ico">📺</span><div><div class="ci-lbl">YouTube</div><div class="ci-val"><a href="https://youtube.com/@KashaniStore" target="_blank">youtube.com/@KashaniStore</a></div></div></div>
+      <div class="ci"><span class="ci-ico">📸</span><div><div class="ci-lbl">Instagram</div><div class="ci-val"><a href="https://instagram.com/KashaniStore" target="_blank">@KashaniStore</a></div></div></div>
+      <div class="ci"><span class="ci-ico">🐦</span><div><div class="ci-lbl">Twitter / X</div><div class="ci-val"><a href="https://twitter.com/KashaniStore" target="_blank">@KashaniStore</a></div></div></div>
+      <div class="ci"><span class="ci-ico">📦</span><div><div class="ci-lbl">Amazon Store</div><div class="ci-val"><a href="https://www.amazon.com" target="_blank">View all products on Amazon</a></div></div></div>
+      <div class="ci"><span class="ci-ico">💼</span><div><div class="ci-lbl">Business Inquiries</div><div class="ci-val"><a href="mailto:business@kashanistore.com">business@kashanistore.com</a></div></div></div>
+    </div>
+    <div class="cf rv d2">
+      <div class="cf-g"><label class="cf-l">Your Name</label><input type="text" class="cf-i" placeholder="John Doe"></div>
+      <div class="cf-g"><label class="cf-l">Email Address</label><input type="email" class="cf-i" placeholder="john@example.com"></div>
+      <div class="cf-g"><label class="cf-l">Subject</label><input type="text" class="cf-i" placeholder="Product recommendation, collab..."></div>
+      <div class="cf-g"><label class="cf-l">Message</label><textarea class="cf-ta" placeholder="Tell us what you're looking for..."></textarea></div>
+      <button class="btn btn-p" style="width:100%;justify-content:center" onclick="sendMsg(this)">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-g">
+    <div>
+      <span class="foot-logo">KASH<b>ANI</b></span>
+      <p class="foot-p">Your trusted source for trending product reviews, deals and Amazon affiliate picks — curated by Kashani Store. New picks every week.</p>
+    </div>
+    <div>
+      <div class="foot-h">Categories</div>
+      <ul class="foot-ul">
+        <li><a href="#" onclick="showCat('tech');return false">Tech & Gadgets</a></li>
+        <li><a href="#" onclick="showCat('gaming');return false">Gaming</a></li>
+        <li><a href="#" onclick="showCat('home');return false">Smart Home</a></li>
+        <li><a href="#" onclick="showCat('beauty');return false">Beauty</a></li>
+        <li><a href="#" onclick="showCat('fitness');return false">Fitness</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-h">Links</div>
+      <ul class="foot-ul">
+        <li><a href="https://youtube.com/@KashaniStore" target="_blank">YouTube Channel</a></li>
+        <li><a href="https://www.amazon.com" target="_blank">Amazon Store</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Affiliate Disclosure</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-h">Follow</div>
+      <ul class="foot-ul">
+        <li><a href="https://youtube.com/@KashaniStore" target="_blank">YouTube</a></li>
+        <li><a href="https://instagram.com/KashaniStore" target="_blank">Instagram</a></li>
+        <li><a href="https://twitter.com/KashaniStore" target="_blank">Twitter / X</a></li>
+        <li><a href="#">TikTok</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bot">
+    <p>© 2025 Kashani Store. All rights reserved. Affiliate links may earn commissions.</p>
+    <div class="socials">
+      <a href="https://youtube.com" target="_blank" class="soc">▶</a>
+      <a href="https://instagram.com" target="_blank" class="soc">📸</a>
+      <a href="https://twitter.com" target="_blank" class="soc">🐦</a>
+      <a href="#" class="soc">🎵</a>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /home page -->
+
+<!-- ═══════════ CATEGORY PAGE ═══════════ -->
+<div class="pg" id="pg-cat">
+  <div class="cp-hero">
+    <div class="breadc">
+      <a onclick="goHome();return false" href="#">Home</a>
+      <span style="color:var(--text-muted)">›</span>
+      <a onclick="goHome();setTimeout(()=>scrollSec('#cats'),380);return false" href="#">Categories</a>
+      <span style="color:var(--text-muted)">›</span>
+      <span id="bc-cur" style="color:var(--text)">Category</span>
+    </div>
+    <span class="cp-ico" id="cp-ico">💻</span>
+    <h1 class="cp-title"><span id="cp-t1">TECH &</span><br><span class="ak" id="cp-t2">GADGETS</span></h1>
+    <p class="cp-desc" id="cp-desc">The best tech products trending right now.</p>
+  </div>
+  <div class="filter-b">
+    <span class="fl">Filter:</span>
+    <button class="fbtn act" onclick="filterClick(this)">All</button>
+    <button class="fbtn" onclick="filterClick(this)">Under $50</button>
+    <button class="fbtn" onclick="filterClick(this)">$50–$100</button>
+    <button class="fbtn" onclick="filterClick(this)">$100+</button>
+    <button class="fbtn" onclick="filterClick(this)">Top Rated</button>
+  </div>
+  <div class="prod-sec">
+    <div class="prod-g" id="cp-grid"></div>
+  </div>
+  <footer>
+    <div class="foot-bot" style="padding-top:2rem">
+      <p>© 2025 Kashani Store. Affiliate links may earn commissions.</p>
+      <a onclick="goHome();return false" href="#" class="btn btn-s" style="padding:10px 20px;font-size:.75rem">← Back Home</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ══════════════════════════════
+   PRODUCT DATABASE
+   Add / edit products here!
+══════════════════════════════ */
+const DB = {
+  tech:{
+    ico:'💻',t1:'TECH &',t2:'GADGETS',
+    desc:'The latest smartphones, laptops, earbuds and cutting-edge tech products trending right now.',
+    items:[
+      {n:'Wireless Noise-Cancelling Headphones',cat:'Audio',price:'$79',old:'$149',save:'47%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',desc:'Industry-leading ANC, 30hr battery, premium audiophile-grade sound.',link:'https://www.amazon.com',rev:'2.4k'},
+      {n:'Smart Fitness Watch Pro X',cat:'Wearables',price:'$129',old:'$199',save:'35%',stars:4,badge:'new',img:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80',desc:'GPS, heart rate monitoring, 100+ workout modes, 7-day battery.',link:'https://www.amazon.com',rev:'1.8k'},
+      {n:'True Wireless Earbuds Pro',cat:'Audio',price:'$49',old:'$99',save:'51%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80',desc:'6hr playtime, 30hr with case, IPX5 waterproof, deep bass.',link:'https://www.amazon.com',rev:'3.5k'},
+      {n:'Mechanical Keyboard RGB TKL',cat:'Peripherals',price:'$89',old:'$139',save:'36%',stars:5,badge:'new',img:'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80',desc:'Tactile blue switches, full RGB backlight, compact TKL layout.',link:'https://www.amazon.com',rev:'1.2k'},
+      {n:'USB-C 100W Charging Hub 7-in-1',cat:'Accessories',price:'$39',old:'$69',save:'43%',stars:5,badge:'trending',img:'https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=600&q=80',desc:'HDMI 4K@60Hz, USB 3.0, SD slot — perfect for any laptop.',link:'https://www.amazon.com',rev:'920'},
+      {n:'Portable Bluetooth Speaker 360°',cat:'Audio',price:'$59',old:'$89',save:'34%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&q=80',desc:'360° immersive sound, 24hr battery, waterproof IPX7.',link:'https://www.amazon.com',rev:'2.1k'},
+    ]
+  },
+  gaming:{
+    ico:'🎮',t1:'GAMING',t2:'GEAR',
+    desc:'Level up your setup with the most trending gaming accessories, peripherals and gear.',
+    items:[
+      {n:'Pro Gaming Headset 7.1 Surround',cat:'Audio',price:'$69',old:'$119',save:'42%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1612444530582-fc66183b16f7?w=600&q=80',desc:'7.1 surround, RGB lighting, retractable noise-cancelling mic.',link:'https://www.amazon.com',rev:'2.1k'},
+      {n:'Wireless Gaming Controller PC/Mobile',cat:'Controllers',price:'$59',old:'$89',save:'34%',stars:5,badge:'new',img:'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=80',desc:'Bluetooth 5.0, 20hr battery, compatible with PC, Android, iOS.',link:'https://www.amazon.com',rev:'3.2k'},
+      {n:'RGB Gaming Mouse 16000 DPI',cat:'Peripherals',price:'$45',old:'$79',save:'43%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1527814050087-3793815479db?w=600&q=80',desc:'16000 DPI sensor, 8 programmable buttons, flowing RGB lighting.',link:'https://www.amazon.com',rev:'1.5k'},
+      {n:'XXL Gaming Desk Pad Stitched',cat:'Accessories',price:'$29',old:'$49',save:'41%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1616400619175-5beda3a17896?w=600&q=80',desc:'Stitched edges, non-slip rubber base, 36"×16" full desk coverage.',link:'https://www.amazon.com',rev:'4.8k'},
+      {n:'Ergonomic Racing Gaming Chair',cat:'Furniture',price:'$199',old:'$299',save:'33%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=600&q=80',desc:'Lumbar support, adjustable armrests, premium PU leather finish.',link:'https://www.amazon.com',rev:'890'},
+    ]
+  },
+  home:{
+    ico:'🏠',t1:'SMART',t2:'HOME',
+    desc:'Transform your living space with the best smart home gadgets, automation and security devices.',
+    items:[
+      {n:'Smart LED Strip Lights 32ft',cat:'Lighting',price:'$22',old:'$39',save:'44%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',desc:'App & voice control, 16 million colors, music sync mode.',link:'https://www.amazon.com',rev:'6.2k'},
+      {n:'Robot Vacuum & Mop Combo 3000Pa',cat:'Cleaning',price:'$179',old:'$299',save:'40%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1617096200347-cb04ae810b1d?w=600&q=80',desc:'LiDAR auto-mapping, 3000Pa suction, scheduled cleaning app.',link:'https://www.amazon.com',rev:'1.1k'},
+      {n:'Indoor Security Camera 2K WiFi',cat:'Security',price:'$35',old:'$59',save:'41%',stars:4,badge:'hot',img:'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600&q=80',desc:'2K night vision, 2-way audio, motion alerts, cloud & SD storage.',link:'https://www.amazon.com',rev:'2.9k'},
+      {n:'Smart Plug with Energy Monitor 4pk',cat:'Automation',price:'$25',old:'$45',save:'44%',stars:5,badge:'new',img:'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80',desc:'Voice control, schedule, track real-time energy usage in app.',link:'https://www.amazon.com',rev:'3.4k'},
+    ]
+  },
+  beauty:{
+    ico:'✨',t1:'BEAUTY &',t2:'SKINCARE',
+    desc:'Viral beauty tools, trending skincare and wellness products that actually deliver results.',
+    items:[
+      {n:'Gua Sha Face Sculpting Set',cat:'Skincare Tools',price:'$24',old:'$45',save:'47%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1556228720-da5e9c1a433e?w=600&q=80',desc:'Reduce puffiness, define jawline, glass skin in minutes.',link:'https://www.amazon.com',rev:'4.2k'},
+      {n:'7-Color LED Face Mask Therapy',cat:'Devices',price:'$69',old:'$129',save:'47%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=600&q=80',desc:'7 light therapy modes, anti-aging, acne treatment, 30min sessions.',link:'https://www.amazon.com',rev:'1.7k'},
+      {n:'Hyaluronic Acid Serum 2oz',cat:'Serums',price:'$18',old:'$35',save:'49%',stars:5,badge:'new',img:'https://images.unsplash.com/photo-1614634778-be5dd86a7e4c?w=600&q=80',desc:'Deep hydration, visibly plumped skin, completely fragrance-free.',link:'https://www.amazon.com',rev:'5.1k'},
+      {n:'Vitamin C Brightening Day Cream',cat:'Moisturizers',price:'$22',old:'$40',save:'45%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80',desc:'Fade dark spots, even skin tone, SPF 15 sun protection.',link:'https://www.amazon.com',rev:'2.8k'},
+    ]
+  },
+  fitness:{
+    ico:'💪',t1:'FITNESS &',t2:'HEALTH',
+    desc:'Level up your workout with the most trending fitness gear, supplements and health trackers.',
+    items:[
+      {n:'Resistance Bands Set 11pc',cat:'Exercise',price:'$29',old:'$49',save:'41%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80',desc:'5 resistance levels, handles, door anchor — complete home gym kit.',link:'https://www.amazon.com',rev:'7.3k'},
+      {n:'Foam Roller Deep Tissue Grid',cat:'Recovery',price:'$19',old:'$35',save:'46%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80',desc:'Deep tissue myofascial release, multi-density grid surface.',link:'https://www.amazon.com',rev:'2.6k'},
+      {n:'Adjustable Dumbbell Set 40lb',cat:'Weights',price:'$149',old:'$229',save:'35%',stars:5,badge:'new',img:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',desc:'Dial-select weight system — replaces a full rack of 15 dumbbells.',link:'https://www.amazon.com',rev:'1.4k'},
+      {n:'Speed Jump Rope Steel Cable',cat:'Cardio',price:'$15',old:'$29',save:'48%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1544216717-3bbf52512659?w=600&q=80',desc:'Sealed ball bearings, adjustable steel cable, compact carry bag.',link:'https://www.amazon.com',rev:'3.8k'},
+    ]
+  },
+  kitchen:{
+    ico:'🍳',t1:'KITCHEN',t2:'ESSENTIALS',
+    desc:'The most viral kitchen gadgets and appliances going everywhere on social media right now.',
+    items:[
+      {n:'6Qt Digital Air Fryer XL',cat:'Appliances',price:'$59',old:'$99',save:'40%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1585515320310-259814833e62?w=600&q=80',desc:'8 preset cooking modes, 80% less fat, dishwasher-safe parts.',link:'https://www.amazon.com',rev:'3.1k'},
+      {n:'Instant Pot Duo 7-in-1 6Qt',cat:'Pressure Cookers',price:'$79',old:'$129',save:'39%',stars:5,badge:'trending',img:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80',desc:'Pressure cook, slow cook, sauté, steam, yogurt maker & more.',link:'https://www.amazon.com',rev:'9.2k'},
+      {n:'Cold Brew Coffee Maker 1L',cat:'Coffee',price:'$25',old:'$39',save:'36%',stars:4,badge:'new',img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',desc:'Café-quality cold brew at home in 12-24 hours, stainless filter.',link:'https://www.amazon.com',rev:'1.9k'},
+      {n:'Vegetable Chopper 11-in-1',cat:'Tools',price:'$34',old:'$59',save:'42%',stars:4,badge:'hot',img:'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?w=600&q=80',desc:'11 attachments — julienne, dice, slice, grate in seconds.',link:'https://www.amazon.com',rev:'2.3k'},
+    ]
+  },
+  fashion:{
+    ico:'👗',t1:'FASHION &',t2:'STYLE',
+    desc:'Trending fashion picks, accessories and wearables that everyone is talking about right now.',
+    items:[
+      {n:'Chunky Knit Oversized Sweater',cat:'Tops',price:'$45',old:'$79',save:'43%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80',desc:'Luxuriously soft knit, 8 colors available, fits all sizes.',link:'https://www.amazon.com',rev:'1.6k'},
+      {n:'Mini Crossbody Vegan Leather Bag',cat:'Bags',price:'$38',old:'$65',save:'42%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80',desc:'Premium vegan leather, adjustable strap, 6 interior pockets.',link:'https://www.amazon.com',rev:'2.1k'},
+      {n:'Breathable Linen Wide-Leg Pants',cat:'Bottoms',price:'$42',old:'$70',save:'40%',stars:5,badge:'new',img:'https://images.unsplash.com/photo-1594938298603-c8148c4b4a21?w=600&q=80',desc:'Premium linen blend, elastic waist, summer staple.',link:'https://www.amazon.com',rev:'980'},
+      {n:'18K Gold Layered Necklace Set',cat:'Jewelry',price:'$18',old:'$35',save:'49%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80',desc:'Gold plated, 3-piece layered set, non-tarnish guarantee.',link:'https://www.amazon.com',rev:'3.7k'},
+    ]
+  },
+  travel:{
+    ico:'✈️',t1:'TRAVEL &',t2:'ADVENTURE',
+    desc:'Must-have travel accessories, luggage organizers and gadgets for your next adventure.',
+    items:[
+      {n:'Packing Cubes Set 6pc',cat:'Organization',price:'$25',old:'$45',save:'44%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80',desc:'Ultralight nylon, 3 sizes, color-coded for effortless packing.',link:'https://www.amazon.com',rev:'5.2k'},
+      {n:'Memory Foam 360° Travel Pillow',cat:'Comfort',price:'$29',old:'$49',save:'41%',stars:4,badge:'trending',img:'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=600&q=80',desc:'Ergonomic neck support, luxury memory foam, washable cover.',link:'https://www.amazon.com',rev:'2.4k'},
+      {n:'Universal Travel Adapter 200+ Countries',cat:'Electronics',price:'$22',old:'$39',save:'44%',stars:5,badge:'new',img:'https://images.unsplash.com/photo-1542621334-a254cf47733d?w=600&q=80',desc:'Works in 200+ countries, 4 USB-A + 1 USB-C, surge protection.',link:'https://www.amazon.com',rev:'1.9k'},
+      {n:'Waterproof Dry Bag Backpack 20L',cat:'Adventure',price:'$19',old:'$35',save:'46%',stars:5,badge:'hot',img:'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?w=600&q=80',desc:'100% waterproof roll-top seal, floating capable, padded straps.',link:'https://www.amazon.com',rev:'3.1k'},
+    ]
+  }
+};
+
+const bClass = {hot:'b-hot',new:'b-new',trending:'b-trend'};
+const bTxt = {hot:'🔥 HOT',new:'✨ NEW',trending:'📈 TRENDING'};
+
+/* PAGE NAV */
+function goHome(){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-home').classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initRv,120);
+}
+
+function showCat(key){
+  const d=DB[key];if(!d)return;
+  document.getElementById('bc-cur').textContent=d.t1+' '+d.t2;
+  document.getElementById('cp-ico').textContent=d.ico;
+  document.getElementById('cp-t1').textContent=d.t1;
+  document.getElementById('cp-t2').textContent=d.t2;
+  document.getElementById('cp-desc').textContent=d.desc;
+  document.getElementById('cp-grid').innerHTML=d.items.map((p,i)=>`
+    <div class="prod-c rv" style="transition-delay:${i*.07}s">
+      <div class="prod-img-w">
+        <img class="prod-img" src="${p.img}" alt="${p.n}" loading="lazy" onerror="this.parentElement.style.background='var(--surface3)'">
+        <div class="prod-sheen"></div><div class="prod-imgover"></div>
+        <span class="prod-badge ${bClass[p.badge]}">${bTxt[p.badge]}</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-cat">${p.cat}</div>
+        <div class="prod-name">${p.n}</div>
+        <div class="prod-desc">${p.desc}</div>
+        <div class="stars">${'★'.repeat(p.stars)}${'☆'.repeat(5-p.stars)} <span style="color:var(--text-muted);font-size:.75rem">(${p.rev} reviews)</span></div>
+        <div class="prod-pr-row"><span class="prod-price">${p.price}</span><span class="prod-old">${p.old}</span><span class="prod-save">SAVE ${p.save}</span></div>
+        <a href="${p.link}" target="_blank" class="abtn">View on Amazon →</a>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-cat').classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initRv,120);
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('act'));
+  document.querySelector('.fbtn').classList.add('act');
+}
+
+function scrollSec(sel){
+  const el=document.querySelector(sel);
+  if(el)el.scrollIntoView({behavior:'smooth'});
+}
+
+/* CURSOR */
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function loop(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cur2.style.left=rx+'px';cur2.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.addEventListener('mouseover',e=>{if(e.target.closest('a,button,.cat-c,.prod-c,.ci,.soc,.nbtn'))document.body.classList.add('hov')});
+document.addEventListener('mouseout',e=>{if(e.target.closest('a,button,.cat-c,.prod-c,.ci,.soc,.nbtn'))document.body.classList.remove('hov')});
+
+/* SCROLL REVEAL */
+function initRv(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+  },{threshold:.09});
+  document.querySelectorAll('.rv:not(.vis)').forEach(el=>obs.observe(el));
+}
+initRv();
+
+/* NAVBAR */
+const navEl=document.getElementById('nav');
+window.addEventListener('scroll',()=>navEl.classList.toggle('stuck',window.scrollY>40));
+
+/* PARTICLES */
+const ptc=document.getElementById('ptc');
+for(let i=0;i<30;i++){
+  const p=document.createElement('div');
+  p.className='pt';
+  p.style.cssText=`left:${Math.random()*100}vw;width:${Math.random()<.4?1:2}px;height:${Math.random()<.4?1:2}px;animation-duration:${10+Math.random()*14}s;animation-delay:-${Math.random()*22}s`;
+  ptc.appendChild(p);
+}
+
+/* MOBILE MENU */
+function toggleMM(){document.getElementById('mm').classList.toggle('open')}
+
+/* FILTER */
+function filterClick(el){
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+}
+
+/* CONTACT FORM */
+function sendMsg(btn){
+  const orig=btn.textContent;
+  btn.textContent='✓ Message Sent!';btn.style.background='var(--accent3)';btn.style.boxShadow='0 0 30px rgba(0,200,240,.4)';
+  setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.boxShadow='';},3000);
+}
+
+/* COUNTER ANIMATION */
+function countUp(el,target,suf){
+  let n=0;const step=target/55;
+  const t=setInterval(()=>{n+=step;if(n>=target){clearInterval(t);el.textContent=target+suf;return;}el.textContent=Math.floor(n)+suf;},16);
+}
+const sObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){
+    countUp(document.getElementById('sn1'),200,'+');
+    countUp(document.getElementById('sn2'),8,'');
+    countUp(document.getElementById('sn3'),99,'%');
+    sObs.unobserve(e.target);
+  }});
+},{threshold:.5});
+const stEl=document.querySelector('.hstats');
+if(stEl)sObs.observe(stEl);
+</script>
+</body>
+</html>
